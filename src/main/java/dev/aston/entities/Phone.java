@@ -58,15 +58,15 @@ public class Phone {
         public Phone build() {
             return new Phone(this);
         }
+    }
 
-        @Override
-        public String toString() {
-            return "Builder{" +
-                    "brand='" + brand + '\'' +
-                    ", model='" + model + '\'' +
-                    ", memory=" + memory +
-                    ", displaySize=" + displaySize +
-                    '}';
-        }
+    @Override
+    public String toString() {
+        return "Phone{" +
+                "brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", memory=" + memory +
+                ", displaySize=" + displaySize +
+                '}';
     }
 }
