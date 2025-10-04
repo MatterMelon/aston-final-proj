@@ -50,7 +50,7 @@ public class Person implements Comparable<Person>{
         }
     }
 
-    public static class Comparators {
+    public static final class Comparators {
         public static final Comparator<Person> BY_NAME = Comparator.comparing(Person::getName);
         public static final Comparator<Person> BY_SURNAME = Comparator.comparing(Person::getSurname);
         public static final Comparator<Person> BY_AGE = Comparator.comparingInt(Person::getAge);
