@@ -1,6 +1,6 @@
 package dev.aston.entities;
 
-public class Person {
+public class Person implements Comparable<Person>{
     private final String name;
     private final String surname;
     private final int age;
@@ -47,6 +47,18 @@ public class Person {
             return new Person(this);
         }
     }
+
+    @Override
+    public int compareTo(Person o) {
+        int byName = this.name.compareTo(o.name);
+        if (byName != 0) return byName;
+
+        int bySurname = this.surname.compareTo(o.surname);
+        if (bySurname != 0) return bySurname;
+
+        return Integer.compare(this.age, o.age);
+    }
+
 
     @Override
     public String toString() {
