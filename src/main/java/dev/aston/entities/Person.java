@@ -1,5 +1,7 @@
 package dev.aston.entities;
 
+import java.util.Comparator;
+
 public class Person implements Comparable<Person>{
     private final String name;
     private final String surname;
@@ -46,6 +48,12 @@ public class Person implements Comparable<Person>{
         public Person build() {
             return new Person(this);
         }
+    }
+
+    public static class Comparators {
+        public static final Comparator<Person> BY_NAME = Comparator.comparing(Person::getName);
+        public static final Comparator<Person> BY_SURNAME = Comparator.comparing(Person::getSurname);
+        public static final Comparator<Person> BY_AGE = Comparator.comparingInt(Person::getAge);
     }
 
     @Override
