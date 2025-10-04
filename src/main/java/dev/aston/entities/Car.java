@@ -66,4 +66,13 @@ public class Car implements Comparable<Car> {
 
         return Integer.compare(this.year, o.year);
     }
+
+    @Override
+    public String toString() {
+        return "Car{" +
+                "brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", year=" + year +
+                '}';
+    }
 }
