@@ -50,6 +50,12 @@ public class Car implements Comparable<Car> {
         }
     }
 
+    public static final class Comparators {
+        Comparator<Car> BY_BRAND = Comparator.comparing(Car::getBrand);
+        Comparator<Car> BY_MODEL = Comparator.comparing(Car::getModel);
+        Comparator<Car> BY_YEAR = Comparator.comparingInt(Car::getYear);
+    }
+
     @Override
     public int compareTo(Car o) {
         int byBrand = this.brand.compareTo(o.brand);
