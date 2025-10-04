@@ -1,6 +1,8 @@
 package dev.aston.entities;
 
-public class Car {
+import java.util.Comparator;
+
+public class Car implements Comparable<Car> {
     private final String brand;
     private final String model;
     private final int year;
@@ -46,5 +48,16 @@ public class Car {
         public Car build() {
             return new Car(this);
         }
+    }
+
+    @Override
+    public int compareTo(Car o) {
+        int byBrand = this.brand.compareTo(o.brand);
+        if (byBrand != 0) return byBrand;
+
+        int byModel = this.model.compareTo(o.model);
+        if (byModel != 0) return byModel;
+
+        return Integer.compare(this.year, o.year);
     }
 }
