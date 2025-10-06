@@ -1,6 +1,6 @@
 package dev.aston.entities;
 
-public class Phone {
+public class Phone implements Comparable<Phone> {
     private final String brand;
     private final String model;
     private final int memory;
@@ -58,6 +58,20 @@ public class Phone {
         public Phone build() {
             return new Phone(this);
         }
+    }
+
+    @Override
+    public int compareTo(Phone o) {
+        int byBrand = this.brand.compareTo(o.brand);
+        if (byBrand != 0) return byBrand;
+
+        int byModel = this.model.compareTo(o.model);
+        if (byModel != 0) return byBrand;
+
+        int byMemory = Integer.compare(this.memory, o.memory);
+        if (byMemory != 0) return byMemory;
+
+        return Integer.compare(this.displaySize, o.displaySize);
     }
 
     @Override
