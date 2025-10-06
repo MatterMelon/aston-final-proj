@@ -1,5 +1,7 @@
 package dev.aston.entities;
 
+import java.util.Comparator;
+
 public class Phone implements Comparable<Phone> {
     private final String brand;
     private final String model;
@@ -58,6 +60,13 @@ public class Phone implements Comparable<Phone> {
         public Phone build() {
             return new Phone(this);
         }
+    }
+
+    public static final class Comparators {
+        public static final Comparator<Phone> BY_BRAND = Comparator.comparing(Phone::getBrand);
+        public static final Comparator<Phone> BY_MODEL = Comparator.comparing(Phone::getModel);
+        public static final Comparator<Phone> BY_MEMORY = Comparator.comparingInt(Phone::getMemory);
+        public static final Comparator<Phone> BY_DISPLAY_SIZE = Comparator.comparingInt(Phone::getDisplaySize);
     }
 
     @Override
