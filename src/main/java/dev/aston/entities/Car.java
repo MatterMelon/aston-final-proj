@@ -51,9 +51,9 @@ public class Car implements Comparable<Car> {
     }
 
     public static final class Comparators {
-        Comparator<Car> BY_BRAND = Comparator.comparing(Car::getBrand);
-        Comparator<Car> BY_MODEL = Comparator.comparing(Car::getModel);
-        Comparator<Car> BY_YEAR = Comparator.comparingInt(Car::getYear);
+        public static final Comparator<Car> BY_BRAND = Comparator.comparing(Car::getBrand);
+        public static final Comparator<Car> BY_MODEL = Comparator.comparing(Car::getModel);
+        public static final Comparator<Car> BY_YEAR = Comparator.comparingInt(Car::getYear);
     }
 
     @Override
