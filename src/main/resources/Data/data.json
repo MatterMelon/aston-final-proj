@@ -1,0 +1,269 @@
+[
+  {
+    "name": "Ivan",
+    "surname": "Petrov",
+    "age": 28
+  },
+  {
+    "brand": "Samsung",
+    "model": "Galaxy S21",
+    "memory": 128,
+    "displaySize": 6
+  },
+  {
+    "brand": "Toyota",
+    "model": "Camry",
+    "year": 2020
+  },
+  {
+    "name": "Anna",
+    "surname": "Sidorova",
+    "age": 32
+  },
+  {
+    "brand": "iPhone",
+    "model": "13 Pro",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "BMW",
+    "model": "X5",
+    "year": 2019
+  },
+  {
+    "name": "Dmitry",
+    "surname": "Kozlov",
+    "age": 25
+  },
+  {
+    "brand": "Xiaomi",
+    "model": "Redmi Note 10",
+    "memory": 64,
+    "displaySize": 6
+  },
+  {
+    "brand": "Mercedes",
+    "model": "E-Class",
+    "year": 2021
+  },
+  {
+    "name": "Elena",
+    "surname": "Vasileva",
+    "age": 35
+  },
+  {
+    "brand": "Google",
+    "model": "Pixel 6",
+    "memory": 128,
+    "displaySize": 6
+  },
+  {
+    "brand": "Audi",
+    "model": "A4",
+    "year": 2018
+  },
+  {
+    "name": "Sergey",
+    "surname": "Ivanov",
+    "age": 29
+  },
+  {
+    "brand": "OnePlus",
+    "model": "9 Pro",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Honda",
+    "model": "Civic",
+    "year": 2022
+  },
+  {
+    "name": "Olga",
+    "surname": "Smirnova",
+    "age": 31
+  },
+  {
+    "brand": "Huawei",
+    "model": "P50 Pro",
+    "memory": 512,
+    "displaySize": 6
+  },
+  {
+    "brand": "Volkswagen",
+    "model": "Tiguan",
+    "year": 2017
+  },
+  {
+    "name": "Alexey",
+    "surname": "Popov",
+    "age": 27
+  },
+  {
+    "brand": "Oppo",
+    "model": "Find X3",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Hyundai",
+    "model": "Tucson",
+    "year": 2021
+  },
+  {
+    "name": "Maria",
+    "surname": "Kuznetsova",
+    "age": 33
+  },
+  {
+    "brand": "Realme",
+    "model": "GT Master",
+    "memory": 128,
+    "displaySize": 6
+  },
+  {
+    "brand": "Kia",
+    "model": "Sportage",
+    "year": 2019
+  },
+  {
+    "name": "Andrey",
+    "surname": "Sokolov",
+    "age": 26
+  },
+  {
+    "brand": "Nokia",
+    "model": "8.3",
+    "memory": 128,
+    "displaySize": 6
+  },
+  {
+    "brand": "Ford",
+    "model": "Focus",
+    "year": 2020
+  },
+  {
+    "name": "Natalia",
+    "surname": "Mikhailova",
+    "age": 30
+  },
+  {
+    "brand": "Motorola",
+    "model": "Edge 20",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Nissan",
+    "model": "Qashqai",
+    "year": 2018
+  },
+  {
+    "name": "Pavel",
+    "surname": "Fedorov",
+    "age": 34
+  },
+  {
+    "brand": "Sony",
+    "model": "Xperia 1 III",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Mazda",
+    "model": "CX-5",
+    "year": 2021
+  },
+  {
+    "name": "Tatiana",
+    "surname": "Morozova",
+    "age": 29
+  },
+  {
+    "brand": "Vivo",
+    "model": "X70 Pro",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Subaru",
+    "model": "Outback",
+    "year": 2020
+  },
+  {
+    "name": "Mikhail",
+    "surname": "Volkov",
+    "age": 31
+  },
+  {
+    "brand": "LG",
+    "model": "Wing",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Volvo",
+    "model": "XC60",
+    "year": 2019
+  },
+  {
+    "name": "Ekaterina",
+    "surname": "Pavlova",
+    "age": 28
+  },
+  {
+    "brand": "Asus",
+    "model": "ROG Phone 5",
+    "memory": 512,
+    "displaySize": 6
+  },
+  {
+    "brand": "Lexus",
+    "model": "RX 350",
+    "year": 2022
+  },
+  {
+    "name": "Roman",
+    "surname": "Semyonov",
+    "age": 32
+  },
+  {
+    "brand": "ZTE",
+    "model": "Axon 30",
+    "memory": 128,
+    "displaySize": 6
+  },
+  {
+    "brand": "Jeep",
+    "model": "Grand Cherokee",
+    "year": 2018
+  },
+  {
+    "name": "Svetlana",
+    "surname": "Golubeva",
+    "age": 27
+  },
+  {
+    "brand": "Honor",
+    "model": "50",
+    "memory": 256,
+    "displaySize": 6
+  },
+  {
+    "brand": "Land Rover",
+    "model": "Discovery",
+    "year": 2021
+  },
+  {
+    "name": "Vladimir",
+    "surname": "Kiselev",
+    "age": 36
+  },
+  {
+    "brand": "Tecno",
+    "model": "Camon 17",
+    "memory": 128,
+    "displaySize": 6
+  }
+]

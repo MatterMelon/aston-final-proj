@@ -1,0 +1,85 @@
+package dev.aston.fill.FileFounder;
+
+
+import dev.aston.fill.ObjectAddService;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class JsonParse {
+
+    FileFounder fileFounder = new FileFounder();
+
+    ObjectAddService objectAddService;
+
+    public JsonParse(ObjectAddService objectAddService) {
+        this.objectAddService = objectAddService;
+    }
+
+    public void collectAllInfoJson() {
+        try {
+            fileFounder.parseFiles();
+            for (FilesData foundFile : fileFounder.parseFiles()) {
+                if (foundFile.getName().endsWith(".json")) {
+                    parseFile(foundFile.getPath());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("тут могла быть ваша реклама");
+        }
+    }
+
+    public String getJSONFile(String path) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            List<String> fileLines = Files.readAllLines(Paths.get(path));
+            fileLines.forEach(fileLine -> sb.append(fileLine + "\n"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    public void parseFile(String path) {
+        try {
+            JSONParser jParse = new JSONParser();
+            JSONArray jsonArray = (JSONArray) jParse.parse(getJSONFile(path));
+            jsonArray.forEach(jsonObject -> {
+                JSONObject obj = (JSONObject) jsonObject;
+
+                if (obj.containsKey("name") && obj.containsKey("surname") && obj.containsKey("age")) {
+                    String name = (String) obj.get("name");
+                    String surname = (String) obj.get("surname");
+                    int age = ((Long) obj.get("age")).intValue();
+                    objectAddService.addPerson(name, surname, age);
+
+                } else if (obj.containsKey("brand") && obj.containsKey("model") && obj.containsKey("memory") && obj.containsKey("displaySize")) {
+                    String brand = (String) obj.get("brand");
+                    String model = (String) obj.get("model");
+                    int memory = ((Long) obj.get("memory")).intValue();
+                    int displaySize = ((Long) obj.get("displaySize")).intValue();
+                    objectAddService.addPhone(brand, model, memory, displaySize);
+
+                } else if (obj.containsKey("brand") && obj.containsKey("model") && obj.containsKey("year")) {
+                    String brand = (String) obj.get("brand");
+                    String model = (String) obj.get("model");
+                    int year = ((Long) obj.get("year")).intValue();
+                    objectAddService.addCar(brand, model, year);
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
