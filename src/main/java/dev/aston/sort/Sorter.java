@@ -1,6 +1,7 @@
 package dev.aston.sort;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 public class Sorter<T extends Comparable<? super T>> {
     private SortStrategy<T> strategy;
@@ -9,10 +10,10 @@ public class Sorter<T extends Comparable<? super T>> {
         this.strategy = strategy;
     }
 
-    public Collection<T> sort(Collection<T> collection) {
+    public Collection<T> sort(Collection<T> collection, Comparator<? super T> comparator) {
         if (strategy == null) {
             throw new IllegalStateException("Стратегия не установлена");
         }
-        return strategy.sort(collection);
+        return strategy.sort(collection, comparator);
     }
 }
