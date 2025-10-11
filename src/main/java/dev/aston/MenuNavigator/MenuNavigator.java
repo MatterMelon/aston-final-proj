@@ -1,5 +1,6 @@
 package dev.aston.MenuNavigator;
 
+import dev.aston.FileWrite.FileWrite;
 import dev.aston.fill.*;
 import dev.aston.fill.FileFounder.JsonParse;
 
@@ -8,6 +9,8 @@ import java.util.Scanner;
 public class MenuNavigator {
     InitCollection initCollection = new InitCollection();
     ObjectAddService objectAddService = new ObjectAddService(initCollection);
+    FileWrite fileWrite = new FileWrite();
+    private String type;
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -37,6 +40,10 @@ public class MenuNavigator {
                         showAllObjects();
                         menu();
                         break;
+                    case 5:
+                        writeCollectionToFile();
+                        menu();
+                        break;
                     case 0:
                         exit();
                         break loop;
@@ -59,6 +66,7 @@ public class MenuNavigator {
                 "2. Поиск объекта\n",
                 "3. Сортировать коллекцию\n",
                 "4. Просмотр коллекции\n",
+                "5. Запись коллекции в файл\n",
                 "0. Завершение работы\n"};
         System.out.println("\nМеню:");
         for (int i = 0; i < menu.length; i++) {
@@ -120,18 +128,23 @@ public class MenuNavigator {
                         "3.Car");
         int choice = scanner.nextInt();
         if (choice == 0) return;
+
         switch (choice) {
             case 1:
-                collectionFill.fillWithPersons();
+                type = "Person";
+                collectionFill.fillWithObject(type);
                 break;
             case 2:
-                collectionFill.fillWithPhones();
+                type = "Phone";
+                collectionFill.fillWithObject(type);
                 break;
             case 3:
-                collectionFill.fillWithCars();
+                type = "Car";
+                collectionFill.fillWithObject(type);
                 break;
             default:
                 System.out.println("Неверный выбор");
+
         }
     }
 
@@ -155,6 +168,10 @@ public class MenuNavigator {
             default:
                 System.out.println("Неверный выбор");
         }
+    }
+    public void writeCollectionToFile(){
+        System.out.println("Выберите или создайте файл для записи");
+        fileWrite.writeAllCollectionToFile(initCollection);
     }
 
     public void exit() {
