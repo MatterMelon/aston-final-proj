@@ -164,23 +164,40 @@ public class SortData<T> {
         this.strategy = strategy;
     }
 
+    /*
+     * <U extends Comparable<U>> - гарантирует что fields можно сравнивать друг с другом;
+     * Function<T, U> field - T объект и U тип поля
+     */
     public <U extends Comparable<U>> List<T> sortBy(Function<T, U> field) {
         Comparator<T> comparator = Comparator.comparing(field);
         strategy.sort(data, comparator);
         return data;
     }
 
+    public final List<T> sortByMultiply(Function<T, ? extends Comparable>... fields) {
+        Comparator<T> comparator = Arrays.stream(fields)
+            .map(Comparator::comparing)
+            .reduce(Comparator::thenComparing)
+            .orElseThrow(() -> new IllegalArgumentException("Fields are empty!"));
+
+            strategy.sort(data, comparator);
+            return data;
+    }
+
     public static void main(String[] args) {
         /*
          * Init example
          */
-        enum TypeEx {
-            row1,
-            row2,
-            row3;
-        }
-        List<TypeEx> list = Arrays.asList(TypeEx.row1, TypeEx.row2, TypeEx.row1);
-        SortData<TypeEx> sortData = new SortData<>(list);
+        record Person(String name, int age) {}
+
+        List<Person> people = List.of(
+            new Person("Alice", 25),
+            new Person("Bob", 30), 
+            new Person("Alice", 20),
+            new Person("Bob", 15)
+        );
+
+        SortData<Person> sortData = new SortData<>(people);
 
         /*
          * Menu
@@ -189,13 +206,25 @@ public class SortData<T> {
         for (PickSort elem : pickSorts) {
             System.out.println(elem.getSortName());
         }
+
         Scanner scanner = new Scanner(System.in);
+        
         int scPick = scanner.nextInt();
         if (0 < scPick || scPick > pickSorts.length) {
             scanner.close();
         }
 
         sortData.usePickSort(pickSorts[scPick]);
-        System.out.println(sortData.sortBy(item -> item));
+
+        /*
+         * Single sort
+         */
+        System.out.println(sortData.sortBy(Person::name));
+        System.out.println(sortData.sortBy(Person::age));
+
+        /*
+         * Multiply sort
+         */
+        System.out.println(sortData.sortByMultiply(Person::name, Person::age));
     }
 }
