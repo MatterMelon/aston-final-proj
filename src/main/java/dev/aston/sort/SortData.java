@@ -114,12 +114,13 @@ public class SortData<T> {
     // ======================================================================
 
     /*
-     * Menu
+     * Menu of sorts
      */
     public enum PickSort {
         STANDARD("TimSort"),
         MERGE("MergeSort"),
-        QUICK("QuickSort");
+        QUICK("QuickSort"),
+        SORTEVEN("EvenSort");
 
         private final String sortName;
 
@@ -132,12 +133,14 @@ public class SortData<T> {
         }
     }
 
-    public void usePickSort(PickSort pickSort) {
+    public List<T> usePickSort(PickSort pickSort, Function<T, ? extends Comparable> field) {
         switch (pickSort) {
             case STANDARD -> useQuickSort();
             case MERGE -> useMergeSort();
             case QUICK -> useQuickSort();
+            case SORTEVEN -> useSortsortByEven(field);
         }
+        return data;
     }
 
     public static PickSort[] getSorts() {
@@ -174,6 +177,65 @@ public class SortData<T> {
         return data;
     }
 
+    public <U extends Comparable<U>> List<T> sortByEven(Function<T, U> field) {
+        // Comparator<T> comparator = Comparator.comparing(field);
+        Comparator<T> comparator = new Comparator<T>() {
+            @Override
+            public int compare(T a, T b) {
+                U valueA = field.apply(a);
+                U valueB = field.apply(b);
+
+                /*
+                 * Специфичное условие если одно из значений Integer
+                 */
+                if (valueA instanceof Integer) {
+                    Integer valueAA = (Integer) valueA;
+                    if (valueB instanceof Integer) {
+                        Integer valueBB = (Integer) valueB;
+                        if (valueAA % 2 != 0 && valueBB % 2 != 0) {
+                            return 0;
+                        } else if (valueAA % 2 != 0) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    }
+
+                    /*
+                     * Если "b" не Integer, то проверяем A на нечетность
+                     */
+                    if (valueAA % 2 != 0) {
+                        return 1;
+                    } else {
+                        return valueA.compareTo(valueB);
+                    }
+                }
+                /*
+                 * Если "a" не Integer, то проверяем B на нечетность
+                 */
+                if (valueB instanceof Integer) {
+                    Integer valueBB = (Integer) valueB;
+                    if (valueBB % 2 != 0) {
+                        return 1;
+                    } else {
+                        return valueA.compareTo(valueB);
+                    }
+                }
+                /*
+                 * Базовый исход
+                 */
+                return valueA.compareTo(valueB);
+            }
+        };
+        strategy.sort(data, comparator);
+        return data;
+    }
+
+    public void useSortsortByEven(Function<T, ? extends Comparable> field) {
+        sortByEven(field);
+        this.strategy = new SortStandard();
+    }
+
     public final List<T> sortByMultiply(Function<T, ? extends Comparable>... fields) {
         Comparator<T> comparator = Arrays.stream(fields)
             .map(Comparator::comparing)
@@ -208,23 +270,27 @@ public class SortData<T> {
         }
 
         Scanner scanner = new Scanner(System.in);
-        
+
         int scPick = scanner.nextInt();
         if (0 < scPick || scPick > pickSorts.length) {
             scanner.close();
         }
 
-        sortData.usePickSort(pickSorts[scPick]);
-
         /*
          * Single sort
          */
+        System.out.println("Single");
         System.out.println(sortData.sortBy(Person::name));
-        System.out.println(sortData.sortBy(Person::age));
+        /*
+         * Single + Integer specific modify with even
+         */
+        System.out.println("Single + Integer spec");
+        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::age));
 
         /*
          * Multiply sort
          */
+        System.out.println("Multiply");
         System.out.println(sortData.sortByMultiply(Person::name, Person::age));
     }
 }
