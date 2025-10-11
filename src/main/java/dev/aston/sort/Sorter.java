@@ -16,4 +16,12 @@ public class Sorter<T extends Comparable<? super T>> {
         }
         return strategy.sort(collection, comparator);
     }
+
+    public Collection<T> sortParallel(Collection<T> collection, Comparator<? super T> comparator) throws InterruptedException {
+        if (strategy == null) {
+            throw new IllegalStateException("Стратегия не установлена");
+        }
+        return strategy.parallelSort(collection, comparator);
+    }
+
 }
