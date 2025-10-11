@@ -1,0 +1,145 @@
+package dev.aston.sort;
+
+import dev.aston.entities.Person;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class SorterTest {
+    private List<Person> people;
+    private SortStrategy<Person> bubbleSort;
+    private SortStrategy<Person> quickSort;
+    private Comparator<Person> comparator;
+
+    @BeforeEach
+    void setUp() {
+        bubbleSort = new BubbleSort<>();
+        quickSort = new QuickSort<>();
+
+        comparator = Comparator.comparing(Person::getAge);
+                //.comparing(Person::getSurname)
+                //.thenComparing(Person::getName)
+                //.thenComparingInt(Person::getAge);
+
+        people = new ArrayList<>(List.of(
+                new Person.Builder().name("Alice").surname("Brown").age(25).build(),
+                new Person.Builder().name("Bob").surname("Smith").age(30).build(),
+                new Person.Builder().name("Charlie").surname("Adams").age(22).build(),
+                new Person.Builder().name("David").surname("Jones").age(27).build(),
+                new Person.Builder().name("Eve").surname("White").age(29).build(),
+                new Person.Builder().name("Frank").surname("Taylor").age(31).build(),
+                new Person.Builder().name("Grace").surname("Wilson").age(24).build(),
+                new Person.Builder().name("Hannah").surname("Clark").age(26).build(),
+                new Person.Builder().name("Ian").surname("Lewis").age(28).build(),
+                new Person.Builder().name("Jack").surname("Walker").age(33).build(),
+                new Person.Builder().name("Karen").surname("Hall").age(23).build(),
+                new Person.Builder().name("Leo").surname("Allen").age(34).build(),
+                new Person.Builder().name("Mia").surname("Young").age(21).build(),
+                new Person.Builder().name("Nathan").surname("King").age(32).build(),
+                new Person.Builder().name("Olivia").surname("Scott").age(25).build(),
+                new Person.Builder().name("Paul").surname("Green").age(29).build(),
+                new Person.Builder().name("Quinn").surname("Baker").age(27).build(),
+                new Person.Builder().name("Rachel").surname("Nelson").age(30).build(),
+                new Person.Builder().name("Sam").surname("Hill").age(28).build(),
+                new Person.Builder().name("Tina").surname("Carter").age(24).build()
+        ));
+    }
+
+    @Test
+    void testBubbleSort_SortsCorrectly() {
+        List<Person> sorted = new ArrayList<>(people);
+        sorted.sort(comparator);
+
+        Collection<Person> result = bubbleSort.sort(people, comparator);
+
+        for(Person elem : result){
+            System.out.println(elem);
+        }
+
+        assertEquals(sorted, result, "BubbleSort должна корректно сортировать список");
+    }
+
+    @Test
+    void testQuickSort_SortsCorrectly() {
+        List<Person> sorted = new ArrayList<>(people);
+        sorted.sort(comparator);
+
+        Collection<Person> result = quickSort.sort(people, comparator);
+
+        assertEquals(sorted, result, "QuickSort должна корректно сортировать список");
+    }
+
+    @Test
+    void testBubbleAndQuick_GiveSameResult() {
+        Collection<Person> bubbleResult = bubbleSort.sort(people, comparator);
+        Collection<Person> quickResult = quickSort.sort(people, comparator);
+
+        assertEquals(bubbleResult, quickResult, "BubbleSort и QuickSort должны давать одинаковый результат");
+    }
+
+    @Test
+    void testEmptyList() {
+        List<Person> empty = new ArrayList<>();
+        assertTrue(bubbleSort.sort(empty, comparator).isEmpty(), "BubbleSort должна вернуть пустой список");
+        assertTrue(quickSort.sort(empty, comparator).isEmpty(), "QuickSort должна вернуть пустой список");
+    }
+
+    @Test
+    void testSingleElement() {
+        List<Person> single = List.of(new Person.Builder().name("Solo").surname("Man").age(99).build());
+        Collection<Person> bubbleResult = bubbleSort.sort(single, comparator);
+        Collection<Person> quickResult = quickSort.sort(single, comparator);
+
+        assertEquals(single, bubbleResult, "BubbleSort не должна изменять список из одного элемента");
+        assertEquals(single, quickResult, "QuickSort не должна изменять список из одного элемента");
+    }
+
+    @Test
+    void testDuplicates() {
+        List<Person> duplicates = new ArrayList<>(List.of(
+                new Person.Builder().name("Alex").surname("Brown").age(25).build(),
+                new Person.Builder().name("Alex").surname("Brown").age(25).build(),
+                new Person.Builder().name("Alex").surname("Brown").age(25).build()
+        ));
+
+        Collection<Person> bubbleResult = bubbleSort.sort(duplicates, comparator);
+        Collection<Person> quickResult = quickSort.sort(duplicates, comparator);
+
+        assertEquals(duplicates, bubbleResult, "BubbleSort должна сохранять порядок одинаковых элементов");
+        assertEquals(duplicates, quickResult, "QuickSort должна сохранять порядок одинаковых элементов");
+    }
+
+    @Test
+    void testAlreadySorted() {
+        List<Person> sorted = new ArrayList<>(people);
+        sorted.sort(comparator);
+
+        Collection<Person> bubbleResult = bubbleSort.sort(sorted, comparator);
+        Collection<Person> quickResult = quickSort.sort(sorted, comparator);
+
+        assertEquals(sorted, bubbleResult, "BubbleSort не должна менять уже отсортированный список");
+        assertEquals(sorted, quickResult, "QuickSort не должна менять уже отсортированный список");
+    }
+
+    @Test
+    void testReverseSorted() {
+        List<Person> reversed = new ArrayList<>(people);
+        reversed.sort(comparator.reversed());
+
+        Collection<Person> bubbleResult = bubbleSort.sort(reversed, comparator);
+        Collection<Person> quickResult = quickSort.sort(reversed, comparator);
+
+        List<Person> expected = new ArrayList<>(people);
+        expected.sort(comparator);
+
+        assertEquals(expected, bubbleResult, "BubbleSort должна корректно сортировать в обычный порядок");
+        assertEquals(expected, quickResult, "QuickSort должна корректно сортировать в обычный порядок");
+    }
+}
+
