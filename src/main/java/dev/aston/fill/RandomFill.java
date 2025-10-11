@@ -1,8 +1,11 @@
 package dev.aston.fill;
 
+import dev.aston.FileWrite.FileWrite;
+
 public class RandomFill implements CollectionFillObject {
 
     ObjectAddService objectAddService;
+    FileWrite fileWrite = new FileWrite();
 
     public RandomFill(ObjectAddService objectAddService) {
         this.objectAddService = objectAddService;
@@ -22,32 +25,33 @@ public class RandomFill implements CollectionFillObject {
     private final String[] someSurnames= {"Smith", "Johnson", "Williams", "Brown", "Jones"};
     private final int[] someAges= {18, 25, 32, 45, 60};
 
-
     @Override
-    public void fillWithPhones() {
-        String brand = somePhoneBrands[(int) (Math.random() * 5)];
-        String model = somePhoneModels[(int) (Math.random() * 5)];
-        int memory = someMemorySizes[(int) (Math.random() * 5)];
-        int displaySize = someDisplaySizes[(int) (Math.random() * 5)];
+    public void fillWithObject(String type) {
+        String name,surname,brand,model;
+        int age,memory,displaySize,year;
+        switch (type){
+            case "Person":
+                name = someNames[(int) (Math.random() * 5)];
+                surname = someSurnames[(int) (Math.random() * 5)];
+                age = someAges[(int) (Math.random() * 5)];
 
-        objectAddService.addPhone(brand,model,memory,displaySize);
-    }
+                fileWrite.writeObjectToFile(objectAddService.addPerson(name, surname, age));
+                break;
+            case "Phone":
+                brand = somePhoneBrands[(int) (Math.random() * 5)];
+                model = somePhoneModels[(int) (Math.random() * 5)];
+                memory = someMemorySizes[(int) (Math.random() * 5)];
+                displaySize = someDisplaySizes[(int) (Math.random() * 5)];
 
-    @Override
-    public void fillWithCars() {
-        String brand = someCarsBrands[(int) (Math.random() * 5)];
-        String model = someCarsModels[(int) (Math.random() * 5)];
-        int year = someYearsOfRelease[(int) (Math.random() * 5)];
+                fileWrite.writeObjectToFile(objectAddService.addPhone(brand, model, memory, displaySize));
+                break;
+            case "Car":
+                brand = someCarsBrands[(int) (Math.random() * 5)];
+                model = someCarsModels[(int) (Math.random() * 5)];
+                year = someYearsOfRelease[(int) (Math.random() * 5)];
 
-        objectAddService.addCar(brand,model,year);
-    }
-
-    @Override
-    public void fillWithPersons() {
-        String name = someNames[(int) (Math.random() * 5)];
-        String surname = someSurnames[(int) (Math.random() * 5)];
-        int age = someAges[(int) (Math.random() * 5)];
-
-        objectAddService.addPerson(name,surname,age);
+                fileWrite.writeObjectToFile(objectAddService.addCar(brand, model, year));
+                break;
+        }
     }
 }

@@ -11,7 +11,7 @@ public class ObjectAddService {
         this.initCollection = initCollection;
     }
 
-    public void addPhone(String brand, String model, int memory, int displaySize) {
+    public Phone addPhone(String brand, String model, int memory, int displaySize) {
         Phone phone = new Phone.Builder()
                 .brand(brand)
                 .model(model)
@@ -19,23 +19,26 @@ public class ObjectAddService {
                 .displayMemory(displaySize)
                 .build();
         initCollection.getList().add(phone);
+        return phone;
     }
 
-    public void addCar(String brand, String model, int year) {
+    public Car addCar(String brand, String model, int year) {
         Car car = new Car.Builder()
                 .brand(brand)
                 .model(model)
                 .year(year)
                 .build();
         initCollection.getList().add(car);
+        return car;
     }
 
-    public void addPerson(String name, String surname, int age) {
+    public Person addPerson(String name, String surname, int age) {
         Person person = new Person.Builder()
                 .name(name)
                 .surname(surname)
                 .age(age)
                 .build();
         initCollection.getList().add(person);
+        return person;
     }
 }

@@ -10,13 +10,7 @@ public class FileFill implements CollectionFillObject,CollectionFillObjects {
     }
 
     @Override
-    public void fillWithPhones() {
-    }
-    @Override
-    public void fillWithCars() {
-    }
-    @Override
-    public void fillWithPersons() {
+    public void fillWithObject(String type) {
     }
 
     @Override
