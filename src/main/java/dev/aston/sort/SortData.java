@@ -111,16 +111,34 @@ public class SortData<T> {
         }
 
         private void merge(List<T> list, int left, int mid, int right, Comparator<T> comparator) {
-            List<T> leftList = new ArrayList<>(list.subList(left, mid + 1));
-            List<T> rightList = new ArrayList<>(list.subList(mid + 1, right + 1));
+            Object[] temp = new Object[right - left + 1];
+            int i = left, j = mid + 1, k = 0;
             
             /*
-             * AtomicInteger потокобезопасный класс для многопоточных сред
+             * Цикл сортировки:
+             * добавляет элементы во временный массив temp
+             * k - индекс временного массива temp
              */
-            AtomicInteger index = new AtomicInteger(left);
-            Stream.concat(leftList.stream(), rightList.stream())
-                .sorted(comparator)
-                .forEach(el -> list.set(index.getAndIncrement(), el));
+            while (i <= mid && j <= right) {
+                if (comparator.compare(list.get(i), list.get(j)) <= 0) {
+                    temp[k++] = list.get(i++);
+                } else {
+                    temp[k++] = list.get(j++);
+                }
+            }
+
+            /*
+             * Оставшиеся элементы
+             */
+            while (i <= mid) temp[k++] = list.get(i++);
+            while (j <= right) temp[k++] = list.get(j++);
+
+            /*
+             * Возвращение результатов в исходный список
+             */
+            for (int index = 0; index < temp.length; index++) {
+                list.set(left + index, (T) temp[index]); // принудительное приведение типа
+            }
         }
     }
 
