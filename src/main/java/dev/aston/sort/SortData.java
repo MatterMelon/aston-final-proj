@@ -133,14 +133,32 @@ public class SortData<T> {
         }
     }
 
-    public List<T> usePickSort(PickSort pickSort, Function<T, ? extends Comparable> field) {
+    public List<T> usePickSort(PickSort pickSort, Function<T, ? extends Comparable>... field) {
         switch (pickSort) {
-            case STANDARD -> useQuickSort();
-            case MERGE -> useMergeSort();
-            case QUICK -> useQuickSort();
-            case SORTEVEN -> useSortsortByEven(field);
+            case STANDARD -> {
+                useSortStandard();
+                return sortByMultiply(field);
+            }
+            case MERGE -> {
+                useMergeSort();
+                return sortByMultiply(field);
+            }
+            case QUICK -> {
+                useQuickSort();
+                return sortByMultiply(field);
+            }
+            case SORTEVEN -> {
+                if (field.length != 1) {
+                    throw new IllegalArgumentException("Picked more than one field");
+                }
+                useSortStandard();
+                return sortByEven(field[0]);
+            }
+            default -> {
+                useSortStandard();
+                return sortByMultiply(field);
+            }
         }
-        return data;
     }
 
     public static PickSort[] getSorts() {
@@ -165,16 +183,6 @@ public class SortData<T> {
 
     public void chooseStrategy(SortStrategy<T> strategy) {
         this.strategy = strategy;
-    }
-
-    /*
-     * <U extends Comparable<U>> - гарантирует что fields можно сравнивать друг с другом;
-     * Function<T, U> field - T объект и U тип поля
-     */
-    public <U extends Comparable<U>> List<T> sortBy(Function<T, U> field) {
-        Comparator<T> comparator = Comparator.comparing(field);
-        strategy.sort(data, comparator);
-        return data;
     }
 
     public <U extends Comparable<U>> List<T> sortByEven(Function<T, U> field) {
@@ -231,11 +239,10 @@ public class SortData<T> {
         return data;
     }
 
-    public void useSortsortByEven(Function<T, ? extends Comparable> field) {
-        sortByEven(field);
-        this.strategy = new SortStandard();
-    }
-
+    /*
+     * <U extends Comparable<U>> - гарантирует что fields можно сравнивать друг с другом;
+     * Function<T, U> field - T объект и U тип поля
+     */
     public final List<T> sortByMultiply(Function<T, ? extends Comparable>... fields) {
         Comparator<T> comparator = Arrays.stream(fields)
             .map(Comparator::comparing)
@@ -270,17 +277,21 @@ public class SortData<T> {
         }
 
         Scanner scanner = new Scanner(System.in);
+        System.out.print("Choose sorting: [1-" + pickSorts.length + "] ");
 
-        int scPick = scanner.nextInt();
+        int scPick = scanner.nextInt() -1;
         if (0 < scPick || scPick > pickSorts.length) {
+            System.out.println("Wrong number!");
             scanner.close();
+            return;
         }
 
         /*
          * Single sort
          */
         System.out.println("Single");
-        System.out.println(sortData.sortBy(Person::name));
+        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::name));
+
         /*
          * Single + Integer specific modify with even
          */
@@ -291,6 +302,6 @@ public class SortData<T> {
          * Multiply sort
          */
         System.out.println("Multiply");
-        System.out.println(sortData.sortByMultiply(Person::name, Person::age));
+        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::name, Person::age));
     }
 }
