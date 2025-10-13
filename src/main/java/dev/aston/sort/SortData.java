@@ -351,35 +351,35 @@ public class SortData<T> {
          */
         PickSort[] pickSorts = SortData.getSorts();
         for (PickSort elem : pickSorts) {
-            System.out.println(elem.getSortName());
+            System.out.println(elem.ordinal() + ". " + elem.getSortName());
         }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Choose sorting: [1-" + pickSorts.length + "] ");
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Choose sorting: [1-" + pickSorts.length + "] ");
+            int scPick = scanner.nextInt() -1;
 
-        int scPick = scanner.nextInt() -1;
-        if (0 < scPick || scPick > pickSorts.length) {
-            System.out.println("Wrong number!");
-            scanner.close();
-            return;
+            if (scPick < 0 || scPick >= pickSorts.length) {
+                System.out.println("Wrong number!");
+                return;
+            }
+
+            /*
+             * Single sort
+             */
+            System.out.println("\nSingle");
+            sortData.usePickSort(pickSorts[scPick], Person::name).forEach(System.out::println);
+    
+            /*
+             * Single + Integer specific modify with even
+             */
+            System.out.println("\nSingle + Integer spec");
+            sortData.usePickSort(pickSorts[scPick], Person::age).forEach(System.out::println);
+    
+            /*
+             * Multiply sort
+             */
+            System.out.println("\nMultiply");
+            sortData.usePickSort(pickSorts[scPick], Person::name, Person::age).forEach(System.out::println);
         }
-
-        /*
-         * Single sort
-         */
-        System.out.println("Single");
-        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::name));
-
-        /*
-         * Single + Integer specific modify with even
-         */
-        System.out.println("Single + Integer spec");
-        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::age));
-
-        /*
-         * Multiply sort
-         */
-        System.out.println("Multiply");
-        System.out.println(sortData.usePickSort(pickSorts[scPick], Person::name, Person::age));
     }
 }
