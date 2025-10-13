@@ -5,13 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class SortData<T> {
     public interface SortStrategy<T> {
@@ -150,23 +149,36 @@ public class SortData<T> {
      * Quick sort
      */
     private class QuickSort implements SortStrategy<T> {
+        private final Random random = new Random(); // случайный опорный элемент (pivot) сортировки
+
         @Override
         public void sort(List<T> list, Comparator<T> comparator) {
+            if (list == null || list.size() <= 1) return;
             quickSort(list, 0, list.size()-1, comparator);
         }
 
         private void quickSort(List<T> list, int low, int high, Comparator<T> comparator) {
             if (low < high) {
-                int pivotIndex = partition(list, low, high, comparator);
+                int pivotIndex = randomPartition(list, low, high, comparator);
                 quickSort(list, low, pivotIndex-1, comparator);
                 quickSort(list, pivotIndex+1, high, comparator);
             }
         }
 
+        private int randomPartition(List<T> list, int low, int high, Comparator<T> comparator) {
+            int randomIndex = low + random.nextInt(high - low + 1);
+            
+            Collections.swap(list, randomIndex, high); // размещение опорного элемента в конец
+            return partition(list, low, high, comparator);
+        }
+
+        /*
+         * размещение элементов левее или правее от опорного элемента
+         */
         private int partition(List<T> list, int low, int high, Comparator<T> comparator) {
             T pivot = list.get(high);
             int i = low - 1;
-            
+
             for (int j = low; j < high; j++) {
                 if (comparator.compare(list.get(j), pivot) <= 0) {
                     i++;
