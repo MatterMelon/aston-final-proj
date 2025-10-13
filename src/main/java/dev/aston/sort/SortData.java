@@ -194,27 +194,12 @@ public class SortData<T> {
         this.strategy = new QuickSort();
     }
 
-    /*
-     * Tim sort (standard)
-     */
-    private class SortStandard implements SortStrategy<T> {
-        @Override
-        public void sort(List<T> list, Comparator<T> comparator) {
-            list.sort(comparator);
-        }
-    }
-
-    public void useSortStandard() {
-        this.strategy = new SortStandard();
-    }
-
     // ======================================================================
 
     /*
      * Menu of sorts
      */
     public enum PickSort {
-        STANDARD("TimSort"),
         MERGE("MergeSort"),
         QUICK("QuickSort"),
         SORTEVEN("EvenSort");
@@ -232,10 +217,6 @@ public class SortData<T> {
 
     public List<T> usePickSort(PickSort pickSort, Function<T, ? extends Comparable>... field) {
         switch (pickSort) {
-            case STANDARD -> {
-                useSortStandard();
-                return sortByMultiply(field);
-            }
             case MERGE -> {
                 useMergeSort();
                 return sortByMultiply(field);
@@ -248,11 +229,11 @@ public class SortData<T> {
                 if (field.length != 1) {
                     throw new IllegalArgumentException("Picked more than one field");
                 }
-                useSortStandard();
+                useQuickSort();
                 return sortByEven(field[0]);
             }
             default -> {
-                useSortStandard();
+                useQuickSort();
                 return sortByMultiply(field);
             }
         }
@@ -275,7 +256,7 @@ public class SortData<T> {
         // }
 
         this.data = data != null ? new ArrayList<>(data) : new ArrayList<>();
-        this.strategy = new SortStandard();
+        this.strategy = new QuickSort();
     }
 
     public void chooseStrategy(SortStrategy<T> strategy) {
