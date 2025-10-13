@@ -6,7 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class SortData<T> {
     public interface SortStrategy<T> {
@@ -17,19 +22,91 @@ public class SortData<T> {
      * Merge sort
      */
     private class Mergesort implements SortStrategy<T> {
+        private ExecutorService executor;
+        final int depth = 1;
+        final int maxDepthPapths = 4;
+
         @Override
         public void sort(List<T> list, Comparator<T> comparator) {
-            if (list == null || list.size() <= 1) return;
-            mergeSort(list, 0, list.size()-1, comparator);
+            /*
+             * Executor чтобы не использовать common-pool JVM
+             */
+            try {
+                if (list == null || list.size() <= 1) return;
+                this.executor = Executors.newFixedThreadPool(maxThreads(depth));
+                mergeSort(list, 0, list.size()-1, comparator, depth);
+            } finally {
+                if (executor != null) {
+                    executor.shutdown();
+                }
+            }
         }
 
-        private void mergeSort(List<T> list, int left, int right, Comparator<T> comparator) {
+        private int maxThreads(int depth) {
+            if (depth > maxDepthPapths) {
+                return maxDepthPapths;
+            } else {
+                return Math.max(1, depth);
+            }
+        }
+
+        private static int depthSubArrayCalc(int depth) {
+            int lengthDepth = 3;
+            int depthMultiplier = 10;
+            return lengthDepth + (depth * depthMultiplier);
+        }
+
+        private void mergeSort(List<T> list, int left, int right, Comparator<T> comparator, int depth) {
             if (left < right) {
-                int mid = left + (right - left) / 2;
-                
-                mergeSort(list, left, mid, comparator);
-                mergeSort(list, mid + 1, right, comparator);
-                merge(list, left, mid, right, comparator);
+                int size = right - left + 1; // Размер подмассива
+                int massDepth = depthSubArrayCalc(depth);
+
+                /*
+                 * Для избегания избыточности использования параллельности
+                 */
+                if (size < massDepth) {
+                    int mid = left + (right - left) / 2;
+                    mergeSort(list, left, mid, comparator, depth+1);
+                    mergeSort(list, mid + 1, right, comparator, depth+1);
+                    merge(list, left, mid, right, comparator);
+                } else if ((depth >= 2 && depth <= 3) || (depth < 4 && size>massDepth)) {
+                    int mid = left + (right - left) / 2;
+                    /*
+                     * CompletableFuture.runAsync - запускает поток асинхронно
+                     */
+                    CompletableFuture<?> leftFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, left, mid, comparator, depth+1), executor);
+                    CompletableFuture<?> rightFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, mid + 1, right, comparator, depth+1), executor);
+                    /*
+                     * join() ожидает конца работы future потока
+                     * и не требует обработки исключений
+                     */
+                    leftFuture.join();
+                    rightFuture.join();
+                    merge(list, left, mid, right, comparator);
+                } else {
+                    int bigSize = right - left + 1;
+                    int pathSize = bigSize / 4;
+                    int leftPathSize = bigSize % 4;
+
+                    int mid1 = left + pathSize - 1 + (leftPathSize > 0 ? 1 : 0);
+                    int mid2 = mid1 + pathSize + (leftPathSize > 1 ? 1 : 0);
+                    int mid3 = mid2 + pathSize + (leftPathSize > 2 ? 1 : 0);
+
+                    CompletableFuture<?> firstPathFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, left, mid1, comparator, depth+1), executor);
+                    CompletableFuture<?> secondPathFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, mid1+1, mid2, comparator, depth+1), executor);
+                    CompletableFuture<?> thirdPathFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, mid2+1, mid3, comparator, depth+1), executor);
+                    CompletableFuture<?> fourthPathFuture = CompletableFuture.runAsync(() ->
+                        mergeSort(list, mid3+1, right, comparator, depth+1), executor);
+                    CompletableFuture.allOf(firstPathFuture, secondPathFuture, thirdPathFuture, fourthPathFuture).join();
+                    merge(list, left, mid1, mid2, comparator);
+                    merge(list, left, mid2, mid3, comparator);
+                    merge(list, left, mid3, right, comparator);
+                }
             }
         }
 
@@ -37,23 +114,13 @@ public class SortData<T> {
             List<T> leftList = new ArrayList<>(list.subList(left, mid + 1));
             List<T> rightList = new ArrayList<>(list.subList(mid + 1, right + 1));
             
-            int i = 0, j = 0, k = left;
-            
-            while (i < leftList.size() && j < rightList.size()) {
-                if (comparator.compare(leftList.get(i), rightList.get(j)) <= 0) {
-                    list.set(k++, leftList.get(i++));
-                } else {
-                    list.set(k++, rightList.get(j++));
-                }
-            }
-            
-            while (i < leftList.size()) {
-                list.set(k++, leftList.get(i++));
-            }
-            
-            while (j < rightList.size()) {
-                list.set(k++, rightList.get(j++));
-            }
+            /*
+             * AtomicInteger потокобезопасный класс для многопоточных сред
+             */
+            AtomicInteger index = new AtomicInteger(left);
+            Stream.concat(leftList.stream(), rightList.stream())
+                .sorted(comparator)
+                .forEach(el -> list.set(index.getAndIncrement(), el));
         }
     }
 
