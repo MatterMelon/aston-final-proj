@@ -10,7 +10,15 @@ import java.io.File;
 import java.util.Scanner;
 
 public class FileWrite {
-    Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
+
+    public FileWrite() {
+        this.scanner = new Scanner(System.in);
+    }
+
+    public FileWrite(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     public String createNewJsonFile() {
         System.out.println("Введите название дериктории в основном пакете: ");

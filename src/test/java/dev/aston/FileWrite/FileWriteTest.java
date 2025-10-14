@@ -27,21 +27,21 @@ class FileWriteTest {
 
     @Test
     void testCreateNewJsonFileCreatesDirectoryAndFile() throws IOException {
-        Scanner mockScanner = mock(Scanner.class);
-        when(mockScanner.nextLine())
-                .thenReturn(tempDir.resolve("testDir").toString())
-                .thenReturn("data/data.json");
+        Path tempDir = Files.createTempDirectory("jsonTest");
 
-        fileWrite.scanner = mockScanner;
+        // имитируем ввод: сначала путь до папки, потом имя файла
+        String simulatedInput = tempDir.toString() + "\n" + "test.json\n";
+        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 
+        FileWrite fileWrite = new FileWrite();
         String filePath = fileWrite.createNewJsonFile();
 
+        assertNotNull(filePath);
         File createdFile = new File(filePath);
-
         assertTrue(createdFile.exists());
-        assertTrue(createdFile.getParentFile().exists());
-        assertEquals("data/data.json", createdFile.getName());
+        assertEquals("test.json", createdFile.getName());
     }
+
 
     @Test
     void testWriteObjectToFileCreatesValidJson() throws IOException {
@@ -53,7 +53,7 @@ class FileWriteTest {
                 .thenReturn(dir.toString())
                 .thenReturn("object.json");
 
-        fileWrite.scanner = mockScanner;
+        fileWrite = new FileWrite(mockScanner);
 
         TestPerson person = new TestPerson("John", 25);
 
@@ -81,7 +81,7 @@ class FileWriteTest {
                 .thenReturn(dir.toString())
                 .thenReturn("collection.json");
 
-        fileWrite.scanner = mockScanner;
+        fileWrite = new FileWrite(mockScanner);
 
         InitCollection mockCollection = mock(InitCollection.class);
         List<Object> mockObjects = List.of(new TestPerson("Alice", 30), new TestPerson("Bob", 40));
@@ -111,7 +111,7 @@ class FileWriteTest {
                 .thenReturn("\0invalid")
                 .thenReturn("data/data.json");
 
-        fileWrite.scanner = mockScanner;
+        fileWrite = new FileWrite(mockScanner);
 
         String path = fileWrite.createNewJsonFile();
 
