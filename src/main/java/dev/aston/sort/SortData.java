@@ -1,5 +1,9 @@
 package dev.aston.sort;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +16,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import dev.aston.entities.Person;
 
 public class SortData<T> {
     public interface SortStrategy<T> {
@@ -295,6 +302,82 @@ public class SortData<T> {
 
     // ======================================================================
 
+    /*
+     * Menu of fields
+     */
+    public static List<String> getFields(Class<?> menuFieldsclass) {
+        List<String> fields = new ArrayList<>();
+
+        /*
+         * Берем поля способом в зависимости от того record это или class
+         */
+        if (menuFieldsclass.isRecord()) {
+            Object[] components = menuFieldsclass.getRecordComponents();
+            for (Object component : components) {
+                RecordComponent rc = (RecordComponent) component;
+                fields.add(rc.getName());
+            }
+        } else {
+            Field[] classFields = menuFieldsclass.getFields();
+            for (Field field : classFields) {
+                fields.add(field.getName());
+            }
+        }
+        return fields;
+    }
+
+    /*
+     * Print меню
+     */
+    public static void printFieldsMenu(List<String> fields) {
+        System.out.println("Поля сортировки: ");
+        for (int i = 0; i < fields.size(); i++) {
+            System.out.println((i + 1) + ". " + fields.get(i));
+        }
+    }
+
+    public static List<String> getFieldName(List<String> fields, Scanner scanner) {
+        System.out.print("Выберите поле для сортировки (несколько через запятую): ");
+        String input = scanner.next();
+        String[] choices = input.split(",");
+
+        List<String> pickedFields = new ArrayList<>();
+        for (String pcChoice : choices) {
+            int choice = Integer.parseInt(pcChoice.trim()) - 1;
+            pickedFields.add(fields.get(choice));
+        }
+        return pickedFields;
+    }
+
+    // ======================================================================
+    /*
+     * Конвертеры
+     */
+    private static <T> Function<T, Comparable> createFieldFunction(Class<T> className, String fieldName) {
+        return obj -> {
+            try {
+                if (className.isRecord()) {
+                    Method method = className.getMethod(fieldName);
+                    return (Comparable) method.invoke(obj);
+                } else {
+                    Field field = className.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    return (Comparable) field.get(obj);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error accessing");
+            }
+        };
+    }
+
+    private static <T> List<Function<T, Comparable>> createFieldFunctions(Class<T> className, List<String> fieldNames) {
+        return fieldNames.stream()
+            .map(fieldName -> createFieldFunction(className, fieldName))
+            .collect(Collectors.toList());
+    }
+
+    // ======================================================================
+
     private List<T> data;
     private SortStrategy<T> strategy;
 
@@ -397,7 +480,7 @@ public class SortData<T> {
         SortData<Person> sortData = new SortData<>(people);
 
         /*
-         * Menu
+         * Menu of sorts
          */
         PickSort[] pickSorts = SortData.getSorts();
         for (PickSort elem : pickSorts) {
@@ -412,6 +495,24 @@ public class SortData<T> {
                 System.out.println("Wrong number!");
                 return;
             }
+
+            /*
+             * Menu of fields
+             */
+            List<String> classFields = getFields(Person.class);
+            printFieldsMenu(classFields);
+            List<String> pickedCLassFields = getFieldName(classFields, scanner);
+            /*
+             * Создаем list функций <T, Comparable>
+             */
+            List<Function<Person, Comparable>> fieldFunctions = createFieldFunctions(Person.class, pickedCLassFields);
+            /*
+             * Конвертируем list функций в массив функций
+             */
+            Function<Person, Comparable>[] fieldFunctionsArray = fieldFunctions.toArray(new Function[0]);
+
+            System.out.println("\nMenu print with choices"); //
+            sortData.usePickSort(pickSorts[scPick], fieldFunctionsArray).forEach(System.out::println);
 
             /*
              * Single sort
