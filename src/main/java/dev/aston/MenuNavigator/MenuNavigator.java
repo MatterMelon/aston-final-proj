@@ -9,7 +9,12 @@ import dev.aston.fill.FileFounder.JsonParse;
 import dev.aston.fill.Validate.FieldNames;
 import dev.aston.fill.Validate.ManuallyValidate;
 import dev.aston.search.BinarySearcher;
+import dev.aston.sort.BubbleSort;
+import dev.aston.sort.QuickSort;
+import dev.aston.sort.Sorter;
 
+import javax.swing.plaf.synth.SynthUI;
+import javax.swing.text.Style;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -224,10 +229,38 @@ public class MenuNavigator {
             switch (choice) {
                 case 1:
                     type = "Person";
+                    break;
                 case 2:
                     type = "Phone";
+                    break;
                 case 3:
                     type = "Car";
+                    break;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
+        return type;
+    }
+
+    private String chooseSortType() {
+        System.out.println(
+                """
+                        Выберите тип сортировки:
+                        1.Quick
+                        2.Merge""");
+
+        int choice = scanner.nextInt();
+        String type = "";
+
+        while (type.isEmpty()) {
+            switch (choice) {
+                case 1:
+                    type = "Quick";
+                    break;
+                case 2:
+                    type = "Bubble";
+                    break;
                 default:
                     System.out.println("Неверный выбор");
             }
@@ -260,34 +293,249 @@ public class MenuNavigator {
 
     }
 
-    public void collectionSort() {
+    private Comparator<Person> choosePersonComparator() {
         System.out.println(
                 """
-                        Выберите тип искомого объекта:
-                        1.Person
-                        2.Phone
-                        3.Car""");
+                        Выберите поле для сортировки:
+                        1. Name
+                        2. Surname
+                        3. Age
+                        4. Все поля""");
 
         int choice = scanner.nextInt();
-        if (choice == 0) return;
+        Comparator<Person> comparator = null;
 
-        String type = "";
-
-        while (type.isEmpty()) {
+        while (comparator == null) {
             switch (choice) {
                 case 1:
-                    type = "Person";
+                    comparator = Person.Comparators.BY_NAME;
                     break;
                 case 2:
-                    type = "Phone";
+                    comparator = Person.Comparators.BY_SURNAME;
                     break;
                 case 3:
-                    type = "Car";
+                    comparator = Person.Comparators.BY_AGE;
                     break;
+                case 4:
+                    return null;
                 default:
                     System.out.println("Неверный выбор");
-
             }
+        }
+        return comparator;
+    }
+
+    private Comparator<Phone> choosePhoneComparator() {
+        System.out.println(
+                """
+                        Выберите поле для сортировки:
+                        1. Brand
+                        2. Model
+                        3. Memory
+                        4. displaySize
+                        5. Все поля""");
+
+        int choice = scanner.nextInt();
+        Comparator<Phone> comparator = null;
+
+        while (comparator == null) {
+            switch (choice) {
+                case 1:
+                    comparator = Phone.Comparators.BY_BRAND;
+                    break;
+                case 2:
+                    comparator = Phone.Comparators.BY_MODEL;
+                    break;
+                case 3:
+                    comparator = Phone.Comparators.BY_MEMORY;
+                    break;
+                case 4:
+                    comparator = Phone.Comparators.BY_DISPLAY_SIZE;
+                    break;
+                case 5:
+                    return null;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
+        return comparator;
+    }
+
+    private Comparator<Car> chooseCarComparator() {
+        System.out.println(
+                """
+                        Выберите поле для сортировки:
+                        1. Brand
+                        2. Model
+                        3. Year
+                        4. Все поля""");
+
+        int choice = scanner.nextInt();
+        Comparator<Car> comparator = null;
+
+        while (comparator == null) {
+            switch (choice) {
+                case 1:
+                    comparator = Car.Comparators.BY_BRAND;
+                    break;
+                case 2:
+                    comparator = Car.Comparators.BY_MODEL;
+                    break;
+                case 3:
+                    comparator = Car.Comparators.BY_YEAR;
+                    break;
+                case 4:
+                    return null;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
+        return comparator;
+    }
+
+    private boolean useMultiThread() {
+        System.out.println(
+                """
+                        Использовать многопоточность?:
+                        1. Да
+                        2. Нет""");
+
+        int choice = scanner.nextInt();
+
+        while (true) {
+            switch (choice) {
+                case 1:
+                    return true;
+                case 2:
+                    return false;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
+    }
+
+    private Collection<Person> sortPerson() throws InterruptedException {
+        List<Person> list = getPersonList();
+
+        Sorter<Person> sorter = new Sorter<>();
+        String sortType = chooseSortType();
+
+        if (sortType.equals("Quick")) {
+            sorter.setStrategy(new QuickSort<>());
+        } else {
+            sorter.setStrategy(new BubbleSort<>());
+        }
+
+        Comparator<Person> comparator = choosePersonComparator();
+
+        boolean isMultiThread = useMultiThread();
+
+        if (isMultiThread) {
+            return sorter.sortParallel(list, comparator);
+        }
+
+        return sorter.sort(list, comparator);
+    }
+
+    private Collection<Phone> sortPhone() throws InterruptedException {
+        List<Phone> list = getPhoneList();
+
+        Sorter<Phone> sorter = new Sorter<>();
+        String sortType = chooseSortType();
+
+        if (sortType.equals("Quick")) {
+            sorter.setStrategy(new QuickSort<>());
+        } else {
+            sorter.setStrategy(new BubbleSort<>());
+        }
+
+        Comparator<Phone> comparator = choosePhoneComparator();
+
+        boolean isMultiThread = useMultiThread();
+
+        if (isMultiThread) {
+            return sorter.sortParallel(list, comparator);
+        }
+
+        return sorter.sort(list, comparator);
+    }
+
+    private Collection<Car> sortCar() throws InterruptedException {
+        List<Car> list = getCarList();
+
+        Sorter<Car> sorter = new Sorter<>();
+        String sortType = chooseSortType();
+
+        if (sortType.equals("Quick")) {
+            sorter.setStrategy(new QuickSort<>());
+        } else {
+            sorter.setStrategy(new BubbleSort<>());
+        }
+
+        Comparator<Car> comparator = chooseCarComparator();
+
+        boolean isMultiThread = useMultiThread();
+
+        if (isMultiThread) {
+            return sorter.sortParallel(list, comparator);
+        }
+
+        return sorter.sort(list, comparator);
+    }
+
+    public void collectionSort() {
+        String type = chooseObjectType();
+        String sortType;
+        switch (type) {
+            case "Person":
+                Collection<Person> people = new ArrayList<>();
+                try {
+                    people = sortPerson();
+                } catch (InterruptedException e) {
+                    System.out.println("Ошибка: ");
+                    e.printStackTrace();
+                }
+                if (people.isEmpty()) {
+                    System.out.println("Коллекция пуста!");
+                    return;
+                }
+                System.out.println("Отсортированная коллекция:");
+                people.forEach(System.out::println);
+                break;
+
+            case "Phone":
+                Collection<Phone> phones = new ArrayList<>();
+                try {
+                    phones = sortPhone();
+                } catch (InterruptedException e) {
+                    System.out.println("Ошибка: ");
+                    e.printStackTrace();
+                }
+                if (phones.isEmpty()) {
+                    System.out.println("Коллекция пуста!");
+                    return;
+                }
+                System.out.println("Отсортированная коллекция:");
+                phones.forEach(System.out::println);
+                break;
+            case "Car":
+                Collection<Car> cars = new ArrayList<>();
+                try {
+                    cars = sortCar();
+                } catch (InterruptedException e) {
+                    System.out.println("Ошибка: ");
+                    e.printStackTrace();
+                }
+
+                if (cars.isEmpty()) {
+                    System.out.println("Коллекция пуста!");
+                    return;
+                }
+                System.out.println("Отсортированная коллекция:");
+                cars.forEach(System.out::println);
+                break;
+            default:
+                break;
         }
     }
 
