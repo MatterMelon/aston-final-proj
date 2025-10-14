@@ -125,15 +125,39 @@ public class MenuNavigator {
         return new Car.Builder().brand(brand).model(model).year(year).build();
     }
 
-    private int searchPerson(ManuallyValidate validate) {
+    private List<Person> getPersonList() {
         List<Person> list = new ArrayList<>();
-
-        // Собираем коллекцию нужного типа
         initCollection.getList().forEach(obj -> {
             try {
                 list.add((Person) obj);
             } catch (Exception e) {}
         });
+        return list;
+    }
+
+    private List<Phone> getPhoneList() {
+        List<Phone> list = new ArrayList<>();
+        initCollection.getList().forEach(obj -> {
+            try {
+                list.add((Phone) obj);
+            } catch (Exception e) {}
+        });
+        return list;
+    }
+
+    private List<Car> getCarList() {
+        List<Car> list = new ArrayList<>();
+        initCollection.getList().forEach(obj -> {
+            try {
+                list.add((Car) obj);
+            } catch (Exception e) {}
+        });
+        return list;
+    }
+
+    private int searchPerson(ManuallyValidate validate) {
+        // Собираем коллекцию нужного типа
+        List<Person> list = getPersonList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
@@ -150,14 +174,8 @@ public class MenuNavigator {
     }
 
     private int searchPhone(ManuallyValidate validate) {
-        List<Phone> list = new ArrayList<>();
-
         // Собираем коллекцию нужного типа
-        initCollection.getList().forEach(obj -> {
-            try {
-                list.add((Phone) obj);
-            } catch (Exception e) {}
-        });
+        List<Phone> list = getPhoneList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
@@ -174,14 +192,8 @@ public class MenuNavigator {
     }
 
     private int searchCar(ManuallyValidate validate) {
-        List<Car> list = new ArrayList<>();
-
         // Собираем коллекцию нужного типа
-        initCollection.getList().forEach(obj -> {
-            try {
-                list.add((Car) obj);
-            } catch (Exception e) {}
-        });
+        List<Car> list = getCarList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
@@ -254,14 +266,7 @@ public class MenuNavigator {
 
     }
 
-    public void collectionSort() {
-        /*
-        Не уверен что он нужен,потому что бианрный поиск лучше работает в отсортированной коллекции,
-        поэтому либо сортируем коллекцию сразу после добавления обьекта автоматически,либо принудительно
-        вызываем этот метод перед поиском
-         */
-        System.out.println(3);
-    }
+    public void collectionSort() {}
 
     public void showAllObjects() {
         initCollection.print(initCollection.getList());
