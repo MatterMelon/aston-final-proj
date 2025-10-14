@@ -11,6 +11,11 @@ public class InitCollection {
         return list;
     }
 
+    public List<Object> setList(List<Object> list) {
+        this.list = list;
+        return this.list;
+    }
+
     public void print(List list){
         list.forEach(System.out::println);
     }
