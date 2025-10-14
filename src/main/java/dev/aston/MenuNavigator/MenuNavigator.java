@@ -25,7 +25,11 @@ public class MenuNavigator {
     FileWrite fileWrite = new FileWrite();
     private String type;
 
-    private final Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
+
+    void setScanner(Scanner scanner) {
+        this.scanner = scanner;
+    }
 
     public void runOurProject() {
         String message = "Выбрана неверная опция! Попробуйте заново.";
@@ -214,7 +218,7 @@ public class MenuNavigator {
         return searcher.search(list, target);
     }
 
-    private String chooseObjectType() {
+    public String chooseObjectType() {
         System.out.println(
                 """
                         Выберите тип объекта:
@@ -243,7 +247,7 @@ public class MenuNavigator {
         return type;
     }
 
-    private String chooseSortType() {
+    public String chooseSortType() {
         System.out.println(
                 """
                         Выберите тип сортировки:
