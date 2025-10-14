@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 
 public class SortData<T> {
@@ -150,18 +151,67 @@ public class SortData<T> {
      */
     private class QuickSort implements SortStrategy<T> {
         private final Random random = new Random(); // случайный опорный элемент (pivot) сортировки
+        private ExecutorService executor;
+        final int depth = 1;
+        final int maxDepthPaths = 4;
+        /*
+         * semaphore для лучшей работы с неудачными pivotIndex
+         */
+        private Semaphore semaphore = new Semaphore(maxDepthPaths);
+
 
         @Override
         public void sort(List<T> list, Comparator<T> comparator) {
-            if (list == null || list.size() <= 1) return;
-            quickSort(list, 0, list.size()-1, comparator);
+            try {
+                if (list == null || list.size() <= 1) return;
+                this.executor = Executors.newFixedThreadPool(maxThreads(depth));
+                quickSort(list, 0, list.size()-1, comparator, depth);
+            } finally {
+                if (executor != null) {
+                    executor.shutdown();
+                }
+            }
         }
 
-        private void quickSort(List<T> list, int low, int high, Comparator<T> comparator) {
-            if (low < high) {
-                int pivotIndex = randomPartition(list, low, high, comparator);
-                quickSort(list, low, pivotIndex-1, comparator);
-                quickSort(list, pivotIndex+1, high, comparator);
+        private int maxThreads(int depth) {
+            if (depth > maxDepthPaths) {
+                return maxDepthPaths;
+            } else {
+                return Math.max(1, depth);
+            }
+        }
+
+        private static int depthSubArrayCalc(int depth) {
+            int lengthDepth = 3;
+            int depthMultiplier = 10;
+            return lengthDepth + (depth * depthMultiplier);
+        }
+
+        private void quickSort(List<T> list, int low, int high, Comparator<T> comparator, int depth) {
+            if (low >= high) return;
+
+            int size = high - low + 1;
+            int massDepth = depthSubArrayCalc(depth);
+            int pivotIndex = randomPartition(list, low, high, comparator);
+            semaphore.acquireUninterruptibly();
+            
+            try {
+                if (size < massDepth || depth >= maxDepthPaths) {
+                    quickSort(list, low, pivotIndex-1, comparator, depth+1);
+                    quickSort(list, pivotIndex+1, high, comparator, depth+1);
+                } else {
+                    CompletableFuture<Void> leftFuture = CompletableFuture.runAsync(() -> {
+                        quickSort(list, low, pivotIndex-1, comparator, depth+1);
+                        semaphore.release();
+                    }, executor);
+                    CompletableFuture<Void> rightFuture = CompletableFuture.runAsync(() -> {
+                        quickSort(list, pivotIndex+1, high, comparator, depth+1);
+                        semaphore.release();
+                    }, executor);
+                    CompletableFuture.allOf(leftFuture, rightFuture).join();
+                }
+            } finally {
+                semaphore.release();
             }
         }
 
