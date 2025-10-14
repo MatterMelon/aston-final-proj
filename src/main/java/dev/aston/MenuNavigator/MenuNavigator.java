@@ -18,6 +18,7 @@ import javax.swing.text.Style;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MenuNavigator {
     InitCollection initCollection = new InitCollection();
@@ -581,7 +582,29 @@ public class MenuNavigator {
                 }
                 System.out.println("Отсортированная коллекция:");
                 people.forEach(System.out::println);
-                break;
+                System.out.println(
+                        """
+                                Записать в файл?:
+                                1. Да
+                                2. Нет""");
+
+                int choice = scanner.nextInt();
+
+                while (true) {
+                    switch (choice) {
+                        case 1:
+                            InitCollection c = new InitCollection();
+                            c.setList(people.stream()
+                                    .map(obj -> (Object) obj)
+                                    .collect(Collectors.toList()));
+                            fileWrite.writeAllCollectionToFile(c);
+                            return;
+                        case 2:
+                            return;
+                        default:
+                            System.out.println("Неверный выбор");
+                    }
+                }
 
             case "Phone":
                 Collection<Phone> phones = new ArrayList<>();
@@ -597,7 +620,30 @@ public class MenuNavigator {
                 }
                 System.out.println("Отсортированная коллекция:");
                 phones.forEach(System.out::println);
-                break;
+
+                System.out.println(
+                        """
+                                Записать в файл?:
+                                1. Да
+                                2. Нет""");
+
+                choice = scanner.nextInt();
+
+                while (true) {
+                    switch (choice) {
+                        case 1:
+                            InitCollection c = new InitCollection();
+                            c.setList(phones.stream()
+                                    .map(obj -> (Object) obj)
+                                    .collect(Collectors.toList()));
+                            fileWrite.writeAllCollectionToFile(c);
+                            return;
+                        case 2:
+                            return;
+                        default:
+                            System.out.println("Неверный выбор");
+                    }
+                }
             case "Car":
                 Collection<Car> cars = new ArrayList<>();
                 try {
@@ -613,7 +659,30 @@ public class MenuNavigator {
                 }
                 System.out.println("Отсортированная коллекция:");
                 cars.forEach(System.out::println);
-                break;
+
+                System.out.println(
+                        """
+                                Записать в файл?:
+                                1. Да
+                                2. Нет""");
+
+                choice = scanner.nextInt();
+
+                while (true) {
+                    switch (choice) {
+                        case 1:
+                            InitCollection c = new InitCollection();
+                            c.setList(cars.stream()
+                                    .map(car -> (Object) car)
+                                    .collect(Collectors.toList()));
+                            fileWrite.writeAllCollectionToFile(c);
+                            return;
+                        case 2:
+                            return;
+                        default:
+                            System.out.println("Неверный выбор");
+                    }
+                }
             default:
                 break;
         }
