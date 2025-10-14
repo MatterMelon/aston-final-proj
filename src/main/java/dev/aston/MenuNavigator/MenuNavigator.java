@@ -1,24 +1,33 @@
 package dev.aston.MenuNavigator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Scanner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import dev.aston.FileWrite.FileWrite;
 import dev.aston.entities.Car;
 import dev.aston.entities.Person;
 import dev.aston.entities.Phone;
-import dev.aston.fill.*;
+import dev.aston.fill.CollectionFillObject;
+import dev.aston.fill.FileFill;
 import dev.aston.fill.FileFounder.JsonParse;
+import dev.aston.fill.InitCollection;
+import dev.aston.fill.ManuallyFill;
+import dev.aston.fill.ObjectAddService;
+import dev.aston.fill.RandomFill;
 import dev.aston.fill.Validate.FieldNames;
 import dev.aston.fill.Validate.ManuallyValidate;
 import dev.aston.search.BinarySearcher;
 import dev.aston.sort.BubbleSort;
 import dev.aston.sort.QuickSort;
+import dev.aston.sort.SortData;
+import dev.aston.sort.SortData.PickSort;
 import dev.aston.sort.Sorter;
-
-import javax.swing.plaf.synth.SynthUI;
-import javax.swing.text.Style;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MenuNavigator {
     InitCollection initCollection = new InitCollection();
@@ -55,10 +64,14 @@ public class MenuNavigator {
                         menu();
                         break;
                     case 4:
-                        showAllObjects();
+                        anotherCollectionSort();
                         menu();
                         break;
                     case 5:
+                        showAllObjects();
+                        menu();
+                        break;
+                    case 6:
                         writeCollectionToFile();
                         menu();
                         break;
@@ -83,8 +96,9 @@ public class MenuNavigator {
                 "1. Создать новый объект\n",
                 "2. Поиск объекта\n",
                 "3. Сортировать коллекцию\n",
-                "4. Просмотр коллекции\n",
-                "5. Запись коллекции в файл\n",
+                "4. Сортировать коллекцию [2 реализация]\n",
+                "5. Просмотр коллекции\n",
+                "6. Запись коллекции в файл\n",
                 "0. Завершение работы\n"};
         System.out.println("\nМеню:");
         for (int i = 0; i < menu.length; i++) {
@@ -685,6 +699,59 @@ public class MenuNavigator {
                 }
             default:
                 break;
+        }
+    }
+
+    public void anotherCollectionSort() {
+        Collection<?>[] collectionsToSort = { getCarList(), getPersonList(), getPhoneList() };
+        for (Collection<?> elCollection : collectionsToSort) {
+            if (!elCollection.isEmpty()) {
+                // if (elCollection instanceof ArrayList) {
+                //     @SuppressWarnings("unchecked")
+                //     ArrayList<Object> arrayList = (ArrayList<Object>) elCollection;
+                //     @SuppressWarnings("unchecked")
+                //     Class<Object> elementClass = (Class<Object>) elCollection.iterator().next().getClass();
+                //     mainAnotherCollectionSort(elementClass, arrayList);
+                // }
+                Class<?> elClass = elCollection.iterator().next().getClass();
+                @SuppressWarnings("unchecked")
+                Class<Object> objectClass = (Class<Object>) elClass;
+                @SuppressWarnings("unchecked")
+                Collection<Object> typedCollection = (Collection<Object>) elCollection;
+                mainAnotherCollectionSort(objectClass, typedCollection);
+            }
+        }
+    }
+
+    public <T, U extends Collection<T>> void mainAnotherCollectionSort(Class<T> objType, U collection) {
+        List<T> sortCollection = new ArrayList<>(collection);
+        SortData<T> sortData = new SortData<>(sortCollection);
+        /*
+         * Menu of sorts
+         */
+        PickSort[] pickSorts = SortData.getSorts();
+        for (PickSort elem : pickSorts) {
+            System.out.println(elem.ordinal() + ". " + elem.getSortName());
+        }
+        /*
+         * Menu of fields (методы еще не merged)
+         */
+        List<String> classFields = sortData.getFields(objType);
+        sortData.printFieldsMenu(classFields);
+        List<String> pickedCLassFields = sortData.getFieldName(classFields, scanner);
+        List<Function<T, Comparable>> fieldFunctions = sortData.createFieldFunctions(objType, pickedCLassFields);
+        Function<T, Comparable>[] fieldFunctionsArray = fieldFunctions.toArray(new Function[0]);
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Choose sorting: [1-" + pickSorts.length + "] ");
+            int scPick = scanner.nextInt() -1;
+
+            if (scPick < 0 || scPick >= pickSorts.length) {
+                System.out.println("Wrong number!");
+                return;
+            }
+            System.out.println("\nSorting results:"); //
+            sortData.usePickSort(pickSorts[scPick], fieldFunctionsArray).forEach(System.out::println);
         }
     }
 
