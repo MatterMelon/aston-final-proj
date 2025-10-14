@@ -2,11 +2,8 @@ package dev.aston.FileWrite;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.aston.fill.InitCollection;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -33,7 +30,7 @@ class FileWriteTest {
         Scanner mockScanner = mock(Scanner.class);
         when(mockScanner.nextLine())
                 .thenReturn(tempDir.resolve("testDir").toString())
-                .thenReturn("data.json");
+                .thenReturn("data/data.json");
 
         fileWrite.scanner = mockScanner;
 
@@ -43,7 +40,7 @@ class FileWriteTest {
 
         assertTrue(createdFile.exists());
         assertTrue(createdFile.getParentFile().exists());
-        assertEquals("data.json", createdFile.getName());
+        assertEquals("data/data.json", createdFile.getName());
     }
 
     @Test
@@ -112,7 +109,7 @@ class FileWriteTest {
         Scanner mockScanner = mock(Scanner.class);
         when(mockScanner.nextLine())
                 .thenReturn("\0invalid")
-                .thenReturn("data.json");
+                .thenReturn("data/data.json");
 
         fileWrite.scanner = mockScanner;
 
