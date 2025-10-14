@@ -3,7 +3,7 @@ package dev.aston.sort;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class QuickSort<T> implements SortStrategy<T> {
+public class QuickSort<T extends Comparable<? super T>> implements SortStrategy<T> {
 
     private static final int MAX_PARALLEL_DEPTH = 1;
 
@@ -16,7 +16,7 @@ public class QuickSort<T> implements SortStrategy<T> {
 
 
     private void sort(List<T> list, int low, int high, Comparator<? super T> comparator) {
-        if (low > high) return;
+        if (low >= high) return;
         T pivot = list.get(low + (high - low) / 2);
 
         int left = low;
@@ -24,8 +24,8 @@ public class QuickSort<T> implements SortStrategy<T> {
 
         while (left <= right) {
 
-            while (comparator.compare(list.get(left), pivot) < 0) left++;
-            while (comparator.compare(list.get(right), pivot) > 0) right--;
+            while (compare(list.get(left), pivot, comparator) < 0) left++;
+            while (compare(list.get(right), pivot, comparator) > 0) right--;
             if (left <= right) {
                 Collections.swap(list, left, right);
                 left++;
@@ -65,8 +65,8 @@ public class QuickSort<T> implements SortStrategy<T> {
         int right = high;
 
         while (left <= right) {
-            while (comparator.compare(list.get(left), pivot) < 0) left++;
-            while (comparator.compare(list.get(right), pivot) > 0) right--;
+            while (compare(list.get(left), pivot, comparator) < 0) left++;
+            while (compare(list.get(right), pivot, comparator) > 0) right--;
             if (left <= right) {
                 Collections.swap(list, left, right);
                 left++;
@@ -100,5 +100,12 @@ public class QuickSort<T> implements SortStrategy<T> {
             parallelQuickSort(list, low, right, comparator, executor, depth + 1);
             parallelQuickSort(list, left, high, comparator, executor, depth + 1);
         }
+    }
+
+    private int compare(T a, T b, Comparator<? super T> comparator) {
+        if (comparator != null) {
+            return comparator.compare(a, b);
+        }
+        return a.compareTo(b);
     }
 }
