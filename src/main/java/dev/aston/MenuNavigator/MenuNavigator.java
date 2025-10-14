@@ -164,13 +164,13 @@ public class MenuNavigator {
         return list;
     }
 
-    private int searchPerson(ManuallyValidate validate) {
+    private void searchPerson(ManuallyValidate validate) {
         // Собираем коллекцию нужного типа
         List<Person> list = getPersonList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
-            return -1;
+            return;
         }
 
         Collections.sort(list);
@@ -179,16 +179,45 @@ public class MenuNavigator {
 
         Person target = createPerson(validate);
         BinarySearcher<Person> searcher = new BinarySearcher<>();
-        return searcher.search(list, target);
+        int foundIndex = searcher.search(list, target);
+
+        if (foundIndex == -1) {
+            System.out.println("Элемент не найден!");
+            return;
+        }
+
+        System.out.println("Индекс элемента: " + foundIndex);
+        Person foundObj = list.get(foundIndex);
+        System.out.println(foundObj);
+
+        System.out.println(
+                """
+                        Записать в файл?:
+                        1. Да
+                        2. Нет""");
+
+        int choice = scanner.nextInt();
+
+        while (true) {
+            switch (choice) {
+                case 1:
+                    fileWrite.writeObjectToFile(foundObj);
+                    return;
+                case 2:
+                    return;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
     }
 
-    private int searchPhone(ManuallyValidate validate) {
+    private void searchPhone(ManuallyValidate validate) {
         // Собираем коллекцию нужного типа
         List<Phone> list = getPhoneList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
-            return -1;
+            return;
         }
 
         Collections.sort(list);
@@ -197,16 +226,45 @@ public class MenuNavigator {
 
         Phone target = createPhone(validate);
         BinarySearcher<Phone> searcher = new BinarySearcher<>();
-        return searcher.search(list, target);
+        int foundIndex = searcher.search(list, target);
+
+        if (foundIndex == -1) {
+            System.out.println("Элемент не найден!");
+            return;
+        }
+
+        System.out.println("Индекс элемента: " + foundIndex);
+        Phone foundObj = list.get(foundIndex);
+        System.out.println(foundObj);
+
+        System.out.println(
+                """
+                        Записать в файл?:
+                        1. Да
+                        2. Нет""");
+
+        int choice = scanner.nextInt();
+
+        while (true) {
+            switch (choice) {
+                case 1:
+                    fileWrite.writeObjectToFile(foundObj);
+                    return;
+                case 2:
+                    return;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
     }
 
-    private int searchCar(ManuallyValidate validate) {
+    private void searchCar(ManuallyValidate validate) {
         // Собираем коллекцию нужного типа
         List<Car> list = getCarList();
 
         if (list.isEmpty()) {
             System.out.println("Объекты выбранного типа отсутствуют.");
-            return -1;
+            return;
         }
 
         Collections.sort(list);
@@ -215,7 +273,36 @@ public class MenuNavigator {
 
         Car target = createCar(validate);
         BinarySearcher<Car> searcher = new BinarySearcher<>();
-        return searcher.search(list, target);
+        int foundIndex = searcher.search(list, target);
+
+        if (foundIndex == -1) {
+            System.out.println("Элемент не найден!");
+            return;
+        }
+
+        System.out.println("Индекс элемента: " + foundIndex);
+        Car foundObj = list.get(foundIndex);
+        System.out.println(foundObj);
+
+        System.out.println(
+                """
+                        Записать в файл?:
+                        1. Да
+                        2. Нет""");
+
+        int choice = scanner.nextInt();
+
+        while (true) {
+            switch (choice) {
+                case 1:
+                    fileWrite.writeObjectToFile(foundObj);
+                    return;
+                case 2:
+                    return;
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
     }
 
     public String chooseObjectType() {
@@ -279,22 +366,11 @@ public class MenuNavigator {
 
         String type = chooseObjectType();
 
-        int foundIndex = -1;
-
-        foundIndex = switch (type) {
+        switch (type) {
             case "Person" -> searchPerson(validate);
             case "Phone" -> searchPhone(validate);
             case "Car" -> searchCar(validate);
-            default -> foundIndex;
         };
-
-        if (foundIndex == -1) {
-            System.out.println("Элемент не найден!");
-            return;
-        }
-
-        System.out.println("Индекс элемента: " + foundIndex);
-
     }
 
     private Comparator<Person> choosePersonComparator() {
