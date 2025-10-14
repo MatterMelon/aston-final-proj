@@ -55,21 +55,25 @@ public class JsonParse {
             jsonArray.forEach(jsonObject -> {
                 JSONObject obj = (JSONObject) jsonObject;
 
-                if (obj.containsKey("name") && obj.containsKey("surname") && obj.containsKey("age")) {
-                    String name = (String) obj.get("name");
-                    String surname = (String) obj.get("surname");
-                    int age = ((Long) obj.get("age")).intValue();
+                if (obj.containsKey("Person")) {
+                    JSONObject person = (JSONObject) obj.get("Person");
+
+                    String name = (String) person.get("name");
+                    String surname = (String) person.get("surname");
+                    int age = ((Long) person.get("age")).intValue();
                     if(fileValidation.checkingString(name,FieldNames.NAME)&&
                             fileValidation.checkingString(surname,FieldNames.SURNAME)&&
                             fileValidation.checkingInt(age,FieldNames.AGE)) {
                         objectAddService.addPerson(name, surname, age);
                     }else  System.out.println("Объект с данными: "+name+" "+surname+" "+age+" не может быть создан");
 
-                } else if (obj.containsKey("brand") && obj.containsKey("model") && obj.containsKey("memory") && obj.containsKey("displaySize")) {
-                    String brand = (String) obj.get("brand");
-                    String model = (String) obj.get("model");
-                    int memory = ((Long) obj.get("memory")).intValue();
-                    int displaySize = ((Long) obj.get("displaySize")).intValue();
+                } else if (obj.containsKey("Phone")) {
+                    JSONObject phone = (JSONObject) obj.get("Phone");
+
+                    String brand = (String) phone.get("brand");
+                    String model = (String) phone.get("model");
+                    int memory = ((Long) phone.get("memory")).intValue();
+                    int displaySize = ((Long) phone.get("displaySize")).intValue();
                     if(fileValidation.checkingString(brand,FieldNames.BRAND)&&
                             fileValidation.checkingString(model,FieldNames.MODEL)&&
                             fileValidation.checkingInt(memory,FieldNames.MEMORY)&&
@@ -77,10 +81,12 @@ public class JsonParse {
                         objectAddService.addPhone(brand, model, memory, displaySize);
                     }else  System.out.println("Объект с данными: "+brand+" "+model+" "+memory+" "+displaySize+" не может быть создан");
 
-                } else if (obj.containsKey("brand") && obj.containsKey("model") && obj.containsKey("year")) {
-                    String brand = (String) obj.get("brand");
-                    String model = (String) obj.get("model");
-                    int year = ((Long) obj.get("year")).intValue();
+                } else if (obj.containsKey("Car")) {
+                    JSONObject car = (JSONObject) obj.get("Car");
+
+                    String brand = (String) car.get("brand");
+                    String model = (String) car.get("model");
+                    int year = ((Long) car.get("year")).intValue();
                     if(fileValidation.checkingString(brand,FieldNames.BRAND)&&
                             fileValidation.checkingString(model,FieldNames.MODEL)&&
                             fileValidation.checkingInt(year,FieldNames.YEAR)) {

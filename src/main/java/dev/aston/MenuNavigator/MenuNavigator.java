@@ -1,10 +1,18 @@
 package dev.aston.MenuNavigator;
 
 import dev.aston.FileWrite.FileWrite;
+import dev.aston.entities.Car;
+import dev.aston.entities.Person;
+import dev.aston.entities.Phone;
 import dev.aston.fill.*;
 import dev.aston.fill.FileFounder.JsonParse;
+import dev.aston.fill.Validate.FieldNames;
+import dev.aston.fill.Validate.ManuallyValidate;
+import dev.aston.search.BinarySearcher;
 
-import java.util.Scanner;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class MenuNavigator {
     InitCollection initCollection = new InitCollection();
@@ -75,11 +83,175 @@ public class MenuNavigator {
         System.out.println("\nВведите нужную опцию и нажмите Enter [1..4]: ");
     }
 
+    private Person createPerson(ManuallyValidate validate) {
+        System.out.println("Выберете имя: ");
+        String name = validate.checkingString(FieldNames.NAME);
+
+        System.out.println("Выберете фамилию: ");
+        String surname = validate.checkingString(FieldNames.SURNAME);
+
+        System.out.println("Выберете возраст: ");
+        int age = validate.checkingInt(FieldNames.AGE);
+
+        return new Person.Builder().name(name).surname(surname).age(age).build();
+    }
+
+    private Phone createPhone(ManuallyValidate validate) {
+        System.out.println("Выберете бренд: ");
+        String brand = validate.checkingString(FieldNames.BRAND);
+
+        System.out.println("Выберете модель: ");
+        String model = validate.checkingString(FieldNames.MODEL);
+
+        System.out.println("Выберете объем памяти: ");
+        int memory = validate.checkingInt(FieldNames.MEMORY);
+
+        System.out.println("Выберете размер дисплея: ");
+        int displaySize = validate.checkingInt(FieldNames.DISPLAYSIZE);
+
+        return new Phone.Builder().brand(brand).model(model).memory(memory).displayMemory(displaySize).build();
+    }
+
+    private Car createCar(ManuallyValidate validate) {
+        System.out.println("Выберете бренд: ");
+        String brand = validate.checkingString(FieldNames.BRAND);
+
+        System.out.println("Выберете модель: ");
+        String model = validate.checkingString(FieldNames.MODEL);
+
+        System.out.println("Выберете год выпуска: ");
+        int year = validate.checkingInt(FieldNames.YEAR);
+
+        return new Car.Builder().brand(brand).model(model).year(year).build();
+    }
+
+    private int searchPerson(ManuallyValidate validate) {
+        List<Person> list = new ArrayList<>();
+
+        // Собираем коллекцию нужного типа
+        initCollection.getList().forEach(obj -> {
+            try {
+                list.add((Person) obj);
+            } catch (Exception e) {}
+        });
+
+        if (list.isEmpty()) {
+            System.out.println("Объекты выбранного типа отсутствуют.");
+            return -1;
+        }
+
+        Collections.sort(list);
+        System.out.println("Коллекция отсортирована:");
+        list.forEach(System.out::println);
+
+        Person target = createPerson(validate);
+        BinarySearcher<Person> searcher = new BinarySearcher<>();
+        return searcher.search(list, target);
+    }
+
+    private int searchPhone(ManuallyValidate validate) {
+        List<Phone> list = new ArrayList<>();
+
+        // Собираем коллекцию нужного типа
+        initCollection.getList().forEach(obj -> {
+            try {
+                list.add((Phone) obj);
+            } catch (Exception e) {}
+        });
+
+        if (list.isEmpty()) {
+            System.out.println("Объекты выбранного типа отсутствуют.");
+            return -1;
+        }
+
+        Collections.sort(list);
+        System.out.println("Коллекция отсортирована:");
+        list.forEach(System.out::println);
+
+        Phone target = createPhone(validate);
+        BinarySearcher<Phone> searcher = new BinarySearcher<>();
+        return searcher.search(list, target);
+    }
+
+    private int searchCar(ManuallyValidate validate) {
+        List<Car> list = new ArrayList<>();
+
+        // Собираем коллекцию нужного типа
+        initCollection.getList().forEach(obj -> {
+            try {
+                list.add((Car) obj);
+            } catch (Exception e) {}
+        });
+
+        if (list.isEmpty()) {
+            System.out.println("Объекты выбранного типа отсутствуют.");
+            return -1;
+        }
+
+        Collections.sort(list);
+        System.out.println("Коллекция отсортирована:");
+        list.forEach(System.out::println);
+
+        Car target = createCar(validate);
+        BinarySearcher<Car> searcher = new BinarySearcher<>();
+        return searcher.search(list, target);
+    }
+
     public void objectSearch() {
-        /*
-        Вызывает метод бинарного поиска обьекта в коллекции
-         */
-        System.out.println(2);
+        ManuallyValidate validate = new ManuallyValidate();
+
+        System.out.println("Коллекция будет автоматически отсортирована!");
+
+        System.out.println(
+                """
+                        Выберите тип искомого объекта:
+                        1.Person
+                        2.Phone
+                        3.Car""");
+
+        int choice = scanner.nextInt();
+        if (choice == 0) return;
+
+        String type = "";
+
+        while (type.isEmpty()) {
+            switch (choice) {
+                case 1:
+                    type = "Person";
+                    break;
+                case 2:
+                    type = "Phone";
+                    break;
+                case 3:
+                    type = "Car";
+                    break;
+                default:
+                    System.out.println("Неверный выбор");
+
+            }
+        }
+
+        int foundIndex = -1;
+
+        switch (type) {
+            case "Person":
+                foundIndex = searchPerson(validate);
+                break;
+            case "Phone":
+                foundIndex = searchPhone(validate);
+                break;
+            case "Car":
+                foundIndex = searchCar(validate);
+                break;
+        }
+
+        if (foundIndex == -1) {
+            System.out.println("Элемент не найден!");
+            return;
+        }
+
+        System.out.println("Индекс элемента: " + foundIndex);
+
     }
 
     public void collectionSort() {
