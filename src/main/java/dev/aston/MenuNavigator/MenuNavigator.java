@@ -209,11 +209,58 @@ public class MenuNavigator {
         return searcher.search(list, target);
     }
 
+    private String chooseObjectType() {
+        System.out.println(
+                """
+                        Выберите тип объекта:
+                        1.Person
+                        2.Phone
+                        3.Car""");
+
+        int choice = scanner.nextInt();
+        String type = "";
+
+        while (type.isEmpty()) {
+            switch (choice) {
+                case 1:
+                    type = "Person";
+                case 2:
+                    type = "Phone";
+                case 3:
+                    type = "Car";
+                default:
+                    System.out.println("Неверный выбор");
+            }
+        }
+        return type;
+    }
+
     public void objectSearch() {
         ManuallyValidate validate = new ManuallyValidate();
 
         System.out.println("Коллекция будет автоматически отсортирована!");
 
+        String type = chooseObjectType();
+
+        int foundIndex = -1;
+
+        foundIndex = switch (type) {
+            case "Person" -> searchPerson(validate);
+            case "Phone" -> searchPhone(validate);
+            case "Car" -> searchCar(validate);
+            default -> foundIndex;
+        };
+
+        if (foundIndex == -1) {
+            System.out.println("Элемент не найден!");
+            return;
+        }
+
+        System.out.println("Индекс элемента: " + foundIndex);
+
+    }
+
+    public void collectionSort() {
         System.out.println(
                 """
                         Выберите тип искомого объекта:
@@ -242,31 +289,7 @@ public class MenuNavigator {
 
             }
         }
-
-        int foundIndex = -1;
-
-        switch (type) {
-            case "Person":
-                foundIndex = searchPerson(validate);
-                break;
-            case "Phone":
-                foundIndex = searchPhone(validate);
-                break;
-            case "Car":
-                foundIndex = searchCar(validate);
-                break;
-        }
-
-        if (foundIndex == -1) {
-            System.out.println("Элемент не найден!");
-            return;
-        }
-
-        System.out.println("Индекс элемента: " + foundIndex);
-
     }
-
-    public void collectionSort() {}
 
     public void showAllObjects() {
         initCollection.print(initCollection.getList());
